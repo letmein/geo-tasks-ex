@@ -11,7 +11,9 @@ defmodule Db.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env()),
+      aliases: aliases()
     ]
   end
 
@@ -23,6 +25,12 @@ defmodule Db.MixProject do
     ]
   end
 
+  defp aliases do
+    [
+     test: ["ecto.create --quiet", "ecto.migrate", "test"]
+    ]
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
@@ -30,4 +38,7 @@ defmodule Db.MixProject do
       {:postgrex, ">= 0.0.0"}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end
