@@ -9,10 +9,11 @@
 # move said applications out of the umbrella.
 import Config
 
-# Sample configuration:
-#
-#     config :logger, :console,
-#       level: :info,
-#       format: "$date $time [$level] $metadata$message\n",
-#       metadata: [:user_id]
-#
+# TODO: extract env-specific configs
+config :db, Db.Repo,
+  database: "geo_tasks",
+  username: "postgres",
+  password: "",
+  hostname: "localhost"
+
+config :db, ecto_repos: [Db.Repo]
