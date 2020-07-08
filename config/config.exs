@@ -9,11 +9,6 @@
 # move said applications out of the umbrella.
 import Config
 
-# TODO: extract env-specific configs
-config :db, Db.Repo,
-  database: "geo_tasks",
-  username: "postgres",
-  password: "",
-  hostname: "localhost"
-
 config :db, ecto_repos: [Db.Repo]
+
+import_config "#{Mix.env()}.exs"
