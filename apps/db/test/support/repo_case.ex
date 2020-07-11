@@ -1,16 +1,6 @@
 defmodule Db.RepoCase do
   use ExUnit.CaseTemplate
 
-  using do
-    quote do
-      alias Db.Repo
-
-      import Ecto
-      import Ecto.Query
-      import Db.RepoCase
-    end
-  end
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Db.Repo)
 
