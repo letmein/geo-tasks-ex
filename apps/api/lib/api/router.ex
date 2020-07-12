@@ -3,6 +3,7 @@ defmodule Api.Router do
     quote do
       use Plug.Router
 
+      plug(Plug.Parsers, parsers: [:json], json_decoder: Poison, pass: ["application/json"])
       plug(Api.Authorize, role: unquote(role_name))
       plug(:match)
       plug(:dispatch)

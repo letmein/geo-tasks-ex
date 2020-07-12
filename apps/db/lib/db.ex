@@ -32,14 +32,13 @@ defmodule Db do
 
   @spec create_task(geo_location, geo_location, String.t()) :: {:ok, %Task{}}
   def create_task({lat1, long1}, {lat2, long2}, description \\ "") do
-    %Task{
-      status: Task.status_new,
+    Task.new(%{
       description: description,
       lat1: lat1,
       long1: long1,
       lat2: lat2,
       long2: long2
-    }
+    })
     |> Repo.insert
   end
 

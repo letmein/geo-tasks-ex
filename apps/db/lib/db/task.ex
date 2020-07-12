@@ -1,7 +1,8 @@
 defmodule Db.Task do
   use Ecto.Schema
+  import Ecto.Changeset
 
-  @derive {Poison.Encoder, only: [:id, :description, :lat1, :long2, :lat2, :long2]}
+  @derive {Poison.Encoder, only: [:id, :description, :lat1, :long1, :lat2, :long2]}
 
   def status_new, do: "new"
   def status_assigned, do: "assigned"
@@ -17,5 +18,11 @@ defmodule Db.Task do
     field :long2, :float
 
     timestamps()
+  end
+
+  def new(params \\ %{}) do
+    %Db.Task{status: status_new()}
+    |> cast(params, [:description, :lat1, :long1, :lat2, :long2])
+    |> validate_required([:lat1, :long1, :lat2, :long2])
   end
 end

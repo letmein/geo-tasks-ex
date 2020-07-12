@@ -1,14 +1,23 @@
 defmodule DbTest do
   use Db.RepoCase
 
-  test ".create_task" do
-    {:ok, task} = Db.create_task({0.1, 0.2}, {0.3, 0.4}, "test")
+  describe ".create_task" do
+    test "success" do
+      {:ok, task} = Db.create_task({0.1, 0.2}, {0.3, 0.4}, "test")
 
-    assert task.lat1 == 0.1
-    assert task.long1 == 0.2
-    assert task.lat2 == 0.3
-    assert task.long2 == 0.4
-    assert task.description == "test"
+      assert task.lat1 == 0.1
+      assert task.long1 == 0.2
+      assert task.lat2 == 0.3
+      assert task.long2 == 0.4
+      assert task.description == "test"
+      assert task.status == "new"
+    end
+
+    test "invalid payload" do
+      {:error, changeset} = Db.create_task({0.1, nil}, {0.3, 0.4}, "test")
+
+      assert changeset.errors[:long1] == {"can't be blank", [validation: :required]}
+    end
   end
 
   test ".nearby_tasks" do

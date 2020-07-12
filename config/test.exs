@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :db, Db.Repo,
-  database: "geo_tasks",
+  database: "geo_tasks_test",
   username: "postgres",
   password: "",
   hostname: "localhost",

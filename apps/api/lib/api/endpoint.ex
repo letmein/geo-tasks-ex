@@ -13,6 +13,7 @@ defmodule Api.Endpoint do
   plug(:dispatch)
 
   forward("/api/driver", to: Api.DriverRouter)
+  forward("/api/manager", to: Api.ManagerRouter)
 
   match _ do
     send_resp(conn, 404, "Page not found")
