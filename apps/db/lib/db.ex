@@ -30,6 +30,20 @@ defmodule Db do
 
   def authorized?(_, _, _), do: false
 
+  def assign_task(task_id, user_id) do
+    case get_unassigned_task(task_id) do
+      nil -> {:error, %{task_id: "Task not found"}}
+      task -> assign_task_to_driver(task, user_id)
+    end
+  end
+
+  def complete_task(task_id, user_id) do
+    case get_assigned_task(user_id, task_id) do
+      nil -> {:error, %{task_id: "Task not found"}}
+      task -> complete_assigned_task(task)
+    end
+  end
+
   @spec create_task(geo_location, geo_location, String.t()) :: {:ok, %Task{}}
   def create_task({lat1, long1}, {lat2, long2}, description \\ "") do
     Task.new(%{
@@ -39,7 +53,8 @@ defmodule Db do
       lat2: lat2,
       long2: long2
     })
-    |> Repo.insert
+    |> Repo.insert()
+    |> format_result()
   end
 
   @spec nearby_tasks(geo_location, integer()) :: any()
@@ -58,6 +73,20 @@ defmodule Db do
     Repo.all(query)
   end
 
+  def complete_assigned_task(task) do
+    task
+    |> Task.complete()
+    |> Repo.update()
+    |> format_result()
+  end
+
+  defp assign_task_to_driver(task, user_id) do
+    task
+    |> Task.assign(user_id)
+    |> Repo.update()
+    |> format_result()
+  end
+
   defp generate_token do
     :crypto.strong_rand_bytes(32) |> Base.url_encode64
   end
@@ -67,4 +96,28 @@ defmodule Db do
       join: t in assoc(u, :token),
       where: u.id == ^uuid and t.token == ^token_str and t.role == ^role
   end
+
+  defp get_unassigned_task(task_id) do
+    query =
+      from t in Task,
+        where: t.status == ^Task.status_new and t.id == ^task_id
+
+    Repo.one(query)
+  end
+
+  defp get_assigned_task(user_id, task_id) do
+    query =
+      from t in Task,
+        where: t.status == ^Task.status_assigned and t.id == ^task_id and t.driver_id == ^user_id
+
+    Repo.one(query)
+  end
+
+  defp format_result({:error, changeset}) do
+    messages = for {field, {message, _}} <- changeset.errors, into: %{}, do: {field, message}
+
+    {:error, messages}
+  end
+
+  defp format_result({:ok, _} = result), do: result
 end

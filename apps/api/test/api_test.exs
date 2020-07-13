@@ -102,7 +102,43 @@ defmodule ApiTest do
 
       assert status == 201
       assert {"content-type", "application/json; charset=utf-8"} in headers
-      assert %{"lat1" => 1.0, "long1" => 2.0, "lat2" => 3.0, "long2" => 4.0} = Poison.decode!(body)
+      assert %{
+        "lat1" => 1.0,
+        "long1" => 2.0,
+        "lat2" => 3.0,
+        "long2" => 4.0,
+        "status" => "new"
+      } = Poison.decode!(body)
+    end
+  end
+
+  describe "POST /api/driver/task/:task_id/assign" do
+    test "driver assigns task" do
+      {:ok, task} = Db.create_task({1, 1}, {2, 2})
+
+      {status, _, body} =
+        conn(:post, "/api/driver/task/#{task.id}/assign")
+        |> authenticate_driver()
+        |> get_response()
+
+      assert status == 200
+      assert %{"status" => "assigned"} = Poison.decode!(body)
+    end
+  end
+
+  describe "POST /api/driver/task/:task_id/complete" do
+    test "driver completes task" do
+      {user_id, token} = create_user_with_token(Db.Token.role_driver)
+      {:ok, task} = Db.create_task({1, 1}, {2, 2})
+      {:ok, _} = Db.assign_task(task.id, user_id)
+
+      {status, _, body} =
+        conn(:post, "/api/driver/task/#{task.id}/complete")
+        |> add_auth_headers(user_id, token)
+        |> get_response()
+
+      assert status == 200
+      assert %{"status" => "done"} = Poison.decode!(body)
     end
   end
 end
