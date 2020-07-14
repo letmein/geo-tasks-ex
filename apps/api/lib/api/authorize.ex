@@ -1,8 +1,10 @@
 defmodule Api.Authorize do
   import Plug.Conn
 
+  @spec init(any) :: any
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), [{:role, String.t()}]) :: Plug.Conn.t()
   def call(conn, role: role) do
     with [user_id | _] <- get_req_header(conn, "x-user-id"),
          [token | _] <- get_req_header(conn, "x-auth-token"),

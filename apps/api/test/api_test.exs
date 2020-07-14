@@ -9,12 +9,12 @@ defmodule ApiTest do
   end
 
   def authenticate_driver(conn) do
-    {user_id, token} = create_user_with_token(Db.Token.role_driver)
+    {user_id, token} = create_user_with_token(Db.role_driver)
     add_auth_headers(conn, user_id, token)
   end
 
   def authenticate_manager(conn) do
-    {user_id, token} = create_user_with_token(Db.Token.role_manager)
+    {user_id, token} = create_user_with_token(Db.role_manager)
     add_auth_headers(conn, user_id, token)
   end
 
@@ -128,7 +128,7 @@ defmodule ApiTest do
 
   describe "POST /api/driver/task/:task_id/complete" do
     test "driver completes task" do
-      {user_id, token} = create_user_with_token(Db.Token.role_driver)
+      {user_id, token} = create_user_with_token(Db.role_driver)
       {:ok, task} = Db.create_task({1, 1}, {2, 2})
       {:ok, _} = Db.assign_task(task.id, user_id)
 

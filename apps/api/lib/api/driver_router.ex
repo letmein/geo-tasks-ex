@@ -1,5 +1,5 @@
 defmodule Api.DriverRouter do
-  use Api.Router, authorize_role: Db.Token.role_driver
+  use Api.Router, authorize_role: Db.role_driver
 
   get "/tasks-nearby" do
     conn

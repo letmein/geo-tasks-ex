@@ -1,5 +1,5 @@
 defmodule Api.ManagerRouter do
-  use Api.Router, authorize_role: Db.Token.role_manager
+  use Api.Router, authorize_role: Db.role_manager
 
   post "/tasks" do
     case create_task(conn.body_params) do

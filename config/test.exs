@@ -6,3 +6,6 @@ config :db, Db.Repo,
   password: "",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# Disable db logs in test output
+config :logger, level: :info

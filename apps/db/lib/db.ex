@@ -8,11 +8,19 @@ defmodule Db do
 
   @type geo_location :: {float, float}
 
+  @spec role_manager() :: String.t()
+  def role_manager, do: "manager"
+
+  @spec role_driver() :: String.t()
+  def role_driver, do: "driver"
+
+  @spec create_token(String.t()) :: {:error, map} | {:ok, %Token{}}
   def create_token(role) do
     %Token{token: generate_token(), role: role}
     |> Repo.insert
   end
 
+  @spec create_user(integer) :: {:error, map} | {:ok, %User{}}
   def create_user(token_id) do
     token = Token |> Repo.get(token_id)
 
@@ -20,6 +28,7 @@ defmodule Db do
     |> Repo.insert
   end
 
+  @spec authorized?(String.t(), String.t(), String.t()) :: boolean
   def authorized?(user_id, token_str, role)
     when is_binary(user_id) and is_binary(token_str) and is_binary(role) do
     case Ecto.UUID.cast(user_id) do
@@ -30,6 +39,7 @@ defmodule Db do
 
   def authorized?(_, _, _), do: false
 
+  @spec assign_task(String.t(), String.t()) :: {:ok, %Task{}} | {:error, map}
   def assign_task(task_id, user_id) do
     case get_unassigned_task(task_id) do
       nil -> {:error, %{task_id: "Task not found"}}
@@ -37,6 +47,7 @@ defmodule Db do
     end
   end
 
+  @spec complete_task(String.t(), String.t()) :: {:ok, %Task{}} | {:error, map}
   def complete_task(task_id, user_id) do
     case get_assigned_task(user_id, task_id) do
       nil -> {:error, %{task_id: "Task not found"}}
@@ -44,7 +55,7 @@ defmodule Db do
     end
   end
 
-  @spec create_task(geo_location, geo_location, String.t()) :: {:ok, %Task{}}
+  @spec create_task(geo_location, geo_location, String.t()) :: {:ok, %Task{}} | {:error, map}
   def create_task({lat1, long1}, {lat2, long2}, description \\ "") do
     Task.new(%{
       description: description,
@@ -73,7 +84,7 @@ defmodule Db do
     Repo.all(query)
   end
 
-  def complete_assigned_task(task) do
+  defp complete_assigned_task(task) do
     task
     |> Task.complete()
     |> Repo.update()
