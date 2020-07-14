@@ -8,6 +8,10 @@ defmodule Api.ManagerRouter do
     end
   end
 
+  match _ do
+    send_resp(conn, 404, "Page not found")
+  end
+
   defp create_task(json) do
     Db.create_task({json["lat1"], json["long1"]}, {json["lat2"], json["long2"]}, json["description"])
   end

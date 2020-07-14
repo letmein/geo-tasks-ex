@@ -17,6 +17,10 @@ defmodule Api.DriverRouter do
     respond_with_updated_task(conn, result)
   end
 
+  match _ do
+    send_resp(conn, 404, "Page not found")
+  end
+
   defp respond_with_updated_task(conn, {:error, message}) do
     send_json(conn, 422, %{error: message})
   end

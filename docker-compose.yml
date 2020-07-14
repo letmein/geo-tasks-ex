@@ -1,0 +1,36 @@
+version: '3'
+
+networks:
+  internal:
+    external: false
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: geo_tasks
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+  api:
+    image: app:0.0.1
+    build:
+      context: .
+    environment:
+      DATABASE_NAME: geo_tasks
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: password
+      DATABASE_HOST: db
+    ports:
+      - "4000:4000"
+    networks:
+      - internal
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+volumes:
+  pgdata:
